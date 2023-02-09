@@ -47,7 +47,7 @@ RUN if (-not [string]::IsNullOrEmpty($env:EXP_EXE)) { `
         .\installer\setup.exe /q /ACTION=Install /INSTANCENAME=SQLEXPRESS /FEATURES=SQLEngine /UPDATEENABLED=0 /SQLSVCACCOUNT='NT AUTHORITY\NETWORK SERVICE' /SQLSYSADMINACCOUNTS='BUILTIN\ADMINISTRATORS' /TCPENABLED=1 /NPENABLED=0 /IACCEPTSQLSERVERLICENSETERMS; `
         remove-item c:\SQLServerExpress.exe -ErrorAction SilentlyContinue; `
         remove-item -recurse -force c:\installer -ErrorAction SilentlyContinue; `
-    } 
+    }
 
 RUN $SqlServiceName = 'MSSQLSERVER'; `
     if ($env:TYPE -eq 'exp') { `
@@ -80,7 +80,7 @@ RUN $SqlServiceName = 'MSSQLSERVER'; `
     Set-itemproperty -path ('HKLM:\software\microsoft\microsoft sql server\' + $id + '\mssqlserver\supersocketnetlib\tcp\ipall') -name tcpport -value 1433 ; `
     Set-itemproperty -path ('HKLM:\software\microsoft\microsoft sql server\' + $id + '\mssqlserver') -name LoginMode -value 2; `
     Set-itemproperty -path ('HKLM:\software\microsoft\microsoft sql server\' + $id + '\mssqlserver') -name DefaultData -value $databaseFolder; `
-    Set-itemproperty -path ('HKLM:\software\microsoft\microsoft sql server\' + $id + '\mssqlserver') -name DefaultLog -value $databaseFolder; 
+    Set-itemproperty -path ('HKLM:\software\microsoft\microsoft sql server\' + $id + '\mssqlserver') -name DefaultLog -value $databaseFolder;
 
 RUN if (-not [string]::IsNullOrEmpty($env:CU)) { `
         $ProgressPreference = 'SilentlyContinue'; `
@@ -114,9 +114,11 @@ RUN if (-not [string]::IsNullOrEmpty($env:CU)) { `
             Write-Host 'Successfully patched!' `
         } `
     } `
-    remove-item c:\SQLServer-cu.exe -ErrorAction SilentlyContinue; 
+    remove-item c:\SQLServer-cu.exe -ErrorAction SilentlyContinue;
 
 WORKDIR c:\scripts
 COPY .\start.ps1 c:\scripts\
 
-CMD .\start.ps1
+SHELL ["cmd", "/S", "/C"]
+ENTRYPOINT ["cmd", "/S", "/C"]
+CMD ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; c:/scripts/start.ps1"]
