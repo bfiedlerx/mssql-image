@@ -119,6 +119,7 @@ RUN if (-not [string]::IsNullOrEmpty($env:CU)) { `
 WORKDIR c:\scripts
 COPY .\start.ps1 c:\scripts\
 
+EXPOSE 1433
 SHELL ["cmd", "/S", "/C"]
 ENTRYPOINT ["cmd", "/S", "/C"]
 CMD ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'; c:/scripts/start.ps1"]
